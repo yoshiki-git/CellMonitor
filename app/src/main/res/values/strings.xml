@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">CellMonitor</string>
+    <string name="btn_logStart">ログ取得開始</string>
+    <string name="btn_logStop">ログ取得停止</string>
+</resources>
