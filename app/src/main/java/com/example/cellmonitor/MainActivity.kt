@@ -2,6 +2,7 @@ package com.example.cellmonitor
 
 import android.Manifest
 import android.annotation.TargetApi
+import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -20,6 +21,7 @@ import kotlin.concurrent.timer
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    private lateinit var context: Context
     private val REQUEST_CODE : Int = 1000
     private val TAG = "appMainActivity"
 
@@ -34,6 +36,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        context =applicationContext
 
         checkPermission(permissions,REQUEST_CODE)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R){
@@ -51,6 +55,17 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+
+        binding.btnLogStart.setOnClickListener {
+            mySerCheck()
+            val intent = Intent(this,MyService::class.java)
+            startForegroundService(intent)
+        }
+        binding.btnLogStop.setOnClickListener {
+            mySerCheck()
+            val intent = Intent(this,MyService::class.java)
+            stopService(intent)
+        }
     }
 
     //戻るボタンを押した際にダイアログを表示
@@ -64,6 +79,21 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
     }
 
+    fun mySerCheck():Boolean{
+        //ログ保存サービスが起動中かをチェック
+        val am: ActivityManager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        val serlist = am.getRunningServices(Integer.MAX_VALUE)
+        for (info in serlist) {
+            if (MyService::class.java.canonicalName.equals(info.service.getClassName())) {
+                Log.d("MyService","ser running")
+                return true
+            }
+        }
+        Log.d("MyService","ser isn't ruunning")
+        return false
+    }
+
+
     //Permissionチェックのメソッド
     fun checkPermission(permissions: Array<String>?, request_code: Int) {
         // 許可されていないものだけダイアログが表示される
@@ -76,7 +106,7 @@ class MainActivity : AppCompatActivity() {
             val length = cellInfoList.size
             sb.append("取得Cell：${length}個")
             sb.append("\n")
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R){
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q){
                 for (cellInfo in cellInfoList){
                     when(cellInfo){
                         is CellInfoLte ->{
@@ -184,6 +214,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    //Cellの取得
     private fun getCellInformation(result:(List<CellInfo>)-> Unit) {
         val telephonyManager = getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
 

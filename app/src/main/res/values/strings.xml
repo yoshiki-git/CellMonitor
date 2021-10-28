@@ -5,4 +5,5 @@
     <string name="bs_dialog_message">アプリを終了しますか</string>
     <string name="bs_dialog_yes">はい</string>
     <string name="bs_dialog_no">いいえ</string>
+    <string name="button_view">取得セルを画面に表示</string>
 </resources>

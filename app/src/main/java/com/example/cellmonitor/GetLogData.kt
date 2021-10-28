@@ -16,7 +16,7 @@ class GetLogData(val context: Context) {
 
 
     fun getFileStatus(fileName:String): File {
-        val dir_myApp= File("/sdcard/Wifiアプリ")
+        val dir_myApp= File("/sdcard/Cell取得アプリ")
         if (dir_myApp.exists()){
             Log.d(TAG,"App's dir is exist")
         }else{
