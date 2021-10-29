@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
     )
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+       // setContentView(R.layout.activity_main)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -66,6 +66,12 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this,MyService::class.java)
             stopService(intent)
         }
+
+        binding.test5GListener.setOnClickListener {
+            val intent = Intent(this,listen5GActivity::class.java)
+            startActivity(intent)
+        }
+
     }
 
     //戻るボタンを押した際にダイアログを表示
