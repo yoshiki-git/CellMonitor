@@ -3,9 +3,9 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/Users/Yoshiki/AndroidStudioProjects/CellMonitor/app/src/main/res/layout/activity_listen5_gactivity.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/Numata koji/AndroidStudioProjects/CellMonitor/app/src/main/res/layout/activity_main.xml" value="0.358695652173913" />
+        <entry key="..\:/Users/Numata koji/AndroidStudioProjects/CellMonitor/app/src/main/res/layout/list_item.xml" value="0.358695652173913" />
         <entry key="..\:/Users/Yoshiki/AndroidStudioProjects/CellMonitor/app/src/main/res/layout/activity_main.xml" value="0.23822463768115942" />
-        <entry key="..\:/Users/Yoshiki/AndroidStudioProjects/CellMonitor/app/src/main/res/layout/list_item.xml" value="0.36666666666666664" />
       </map>
     </option>
   </component>

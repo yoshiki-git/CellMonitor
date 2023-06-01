@@ -13,6 +13,7 @@ import android.provider.Settings
 import android.telephony.*
 import android.util.Log
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import com.example.cellmonitor.databinding.ActivityMainBinding
 import java.lang.StringBuilder
@@ -31,6 +32,7 @@ class MainActivity : AppCompatActivity() {
         android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
         android.Manifest.permission.READ_EXTERNAL_STORAGE
     )
+    @RequiresApi(Build.VERSION_CODES.P)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
        // setContentView(R.layout.activity_main)
@@ -45,6 +47,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.showCell.setOnClickListener {
+
+
+            cellInfoToTV()
+            //Timer処理は無し
+            /*
             //Handler を用いてTimerの処理をUIスレッドで行うようにする
             //画面に関する処理はUIスレッドで行う必要がある
             val handler = Handler(Looper.getMainLooper())
@@ -54,6 +61,8 @@ class MainActivity : AppCompatActivity() {
                     cellInfoToTV()
                 }
             }
+
+             */
         }
 
         binding.btnLogStart.setOnClickListener {
@@ -71,6 +80,8 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this,listen5GActivity::class.java)
             startActivity(intent)
         }
+
+
 
     }
 
@@ -106,11 +117,32 @@ class MainActivity : AppCompatActivity() {
         ActivityCompat.requestPermissions(this, permissions!!, request_code)
     }
 
+    @RequiresApi(Build.VERSION_CODES.P)
     private fun cellInfoToTV(){
-        getCellInformation { cellInfoList ->
+        getCellInformation { cellInfoList , signalStrength ->
+
+            val gld = GetLogData(context)
+            val file = gld.getFileStatus(GetTimeData().getFileName()+".txt")
+
             val sb = StringBuilder()
             val length = cellInfoList.size
-            sb.append("取得Cell：${length}個")
+
+
+
+            sb.append(
+                signalStrength.toString()
+            )
+            sb.append("\n")
+
+            sb.append("-------------------")
+
+            sb.append("\n")
+
+            sb.append(
+                cellInfoList.toString()
+            )
+            sb.append("\n---------------------\n")
+            sb.append("GetCell：${length}")
             sb.append("\n")
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q){
                 for (cellInfo in cellInfoList){
@@ -216,12 +248,15 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             }
+
             binding.cellinfo.text = sb.toString()
+            gld.getLog(file,sb.toString())
         }
     }
 
     //Cellの取得
-    private fun getCellInformation(result:(List<CellInfo>)-> Unit) {
+    @RequiresApi(Build.VERSION_CODES.P)
+    private fun getCellInformation(result:(List<CellInfo>, SignalStrength)-> Unit) {
         val telephonyManager = getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
 
         if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.Q){
@@ -234,13 +269,16 @@ class MainActivity : AppCompatActivity() {
                Toast.makeText(this,"位置情報の権限がONではありません。",Toast.LENGTH_SHORT).show()
                 return
             }
+
+
             telephonyManager.requestCellInfoUpdate(mainExecutor, object : TelephonyManager.CellInfoCallback() {
                 override fun onCellInfo(cellInfoList: MutableList<CellInfo>) {
-                    result.invoke(cellInfoList)
+                    telephonyManager.signalStrength?.let { result.invoke(cellInfoList, it) }
+
                 }
             })
         }else{
-            result.invoke(telephonyManager.allCellInfo)
+            telephonyManager.signalStrength?.let { result.invoke(telephonyManager.allCellInfo, it) }
         }
 
     }
